@@ -129,5 +129,10 @@ namespace Projet_Victor_c_
             this.DialogResult = DialogResult.OK;
             this.Close();
         }
+
+        private void InitializeComponent()
+        {
+
+        }
     }
 }

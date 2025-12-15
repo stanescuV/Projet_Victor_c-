@@ -115,7 +115,6 @@ namespace Projet_Victor_c_
                 txtDns1.Text = _editingInterface.DnsPrimary ?? "";
                 txtDns2.Text = _editingInterface.DnsSecondary ?? "";
 
-                // exclude current identifier from uniqueness checks
                 _existingIdsOnHost = _existingIdsOnHost.Where(x => !string.Equals(x, _editingInterface.Identifier, StringComparison.OrdinalIgnoreCase)).ToArray();
             }
         }
@@ -132,7 +131,7 @@ namespace Projet_Victor_c_
             var hostId = ((ComboBoxItem)cbHost.SelectedItem)?.Value ?? null;
             if (hostId == null) { MessageBox.Show(this, "Select a host.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
 
-            // ensure identifier unique on host
+          
             if (_existingIdsOnHost != null && _existingIdsOnHost.Any(x => string.Equals(x, id, StringComparison.OrdinalIgnoreCase)))
             {
                 MessageBox.Show(this, "Identifier already exists on selected host.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -170,7 +169,6 @@ namespace Projet_Victor_c_
 
             if (_editingInterface != null)
             {
-                // update existing
                 _editingInterface.Identifier = id;
                 _editingInterface.Description = desc;
                 _editingInterface.Status = status == "Up" ? IfStatus.Up : IfStatus.Down;
@@ -216,7 +214,7 @@ namespace Projet_Victor_c_
 
         private bool IsValidMask(string mask)
         {
-            // accept either IP mask or prefix length like /24 or 24
+            
             if (mask.StartsWith("/")) mask = mask.Substring(1);
             if (int.TryParse(mask, out var v)) { return v >= 0 && v <= 128; }
             return IPAddress.TryParse(mask, out _);

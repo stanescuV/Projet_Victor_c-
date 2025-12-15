@@ -1,21 +1,21 @@
 {
   "Hosts": [
     {
-      "Id": "f187759c-2a69-4891-a5e9-dcdf3560da1f",
+      "Id": "7e146863-4239-42b6-9b54-6bb2b0f3e92d",
       "HostName": "vic",
-      "OS": 1,
+      "OS": 0,
       "Description": "",
       "Tags": [],
       "InterfaceIds": [
-        "65979249-cff9-404d-b8a6-faac425e933c"
+        "f57b81d4-aee6-40f8-af76-cd05b0f04127"
       ]
     }
   ],
   "Interfaces": [
     {
-      "Id": "65979249-cff9-404d-b8a6-faac425e933c",
+      "Id": "f57b81d4-aee6-40f8-af76-cd05b0f04127",
       "Identifier": "1234",
-      "HostId": "f187759c-2a69-4891-a5e9-dcdf3560da1f",
+      "HostId": "7e146863-4239-42b6-9b54-6bb2b0f3e92d",
       "Description": "",
       "Status": 0,
       "MacAddress": "",

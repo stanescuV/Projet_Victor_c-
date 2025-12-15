@@ -5,7 +5,7 @@ using System.Drawing;
 
 namespace Projet_Victor_c_
 {
-    // Simple self-contained form (no designer) to avoid editing existing Form1
+   
     public class MainForm : Form
     {
         private DataStore _ds;
