@@ -18,3 +18,4 @@ C:\Users\stane\Desktop\cod\Projet_Victor_c#\Projet_Victor_c#\obj\Debug\net10.0-w
 C:\Users\stane\Desktop\cod\Projet_Victor_c#\Projet_Victor_c#\obj\Debug\net10.0-windows\Projet_Victor_c_.HostForm.resources
 C:\Users\stane\Desktop\cod\Projet_Victor_c#\Projet_Victor_c#\obj\Debug\net10.0-windows\Projet_Victor_c_.InterfaceForm.resources
 C:\Users\stane\Desktop\cod\Projet_Victor_c#\Projet_Victor_c#\obj\Debug\net10.0-windows\Projet_Victor_c_.MainForm.resources
+C:\Users\stane\Desktop\cod\Projet_Victor_c#\Projet_Victor_c#\obj\Debug\net10.0-windows\Projet_Victor_c_.RuleForm.resources

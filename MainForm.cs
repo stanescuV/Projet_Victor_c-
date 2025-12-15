@@ -1,7 +1,4 @@
-using System;
-using System.Linq;
-using System.Windows.Forms;
-using System.Drawing;
+
 
 namespace Projet_Victor_c_
 {
@@ -49,7 +46,7 @@ namespace Projet_Victor_c_
             listBoxIf.DoubleClick += ListBoxIf_DoubleClick;
             listBoxRules.DoubleClick += ListBoxRules_DoubleClick;
 
-            var file = System.IO.Path.Combine(AppContext.BaseDirectory, "data.json");
+            var file = Path.Combine(AppContext.BaseDirectory, "data.json");
             _ds = new DataStore(file);
             RefreshLists();
         }
@@ -64,15 +61,13 @@ namespace Projet_Victor_c_
             var interfaces = _ds.Interfaces.ToArray();
             using var dlg = new RuleForm(interfaces, id => _ds.Rules.Any(r => string.Equals(r.Identifier, id, StringComparison.OrdinalIgnoreCase)), rule);
 
-            // prepare list of interface ids that currently reference this rule
+            // on prepare la liste des interfaces déjà attachées à cette règle
             var attachedInterfaceIds = _ds.Interfaces.Where(i => i.RuleIds.Contains(rule.Id)).Select(i => i.Id).ToArray();
             dlg.PreselectInterfaces(attachedInterfaceIds);
 
             var res = dlg.ShowDialog(this);
             if (res == DialogResult.OK && dlg.Rule != null)
             {
-                // rule updated in dlg.Rule
-                // detach rule id from all interfaces then attach to selected ones
                 foreach (var ni in _ds.Interfaces) ni.RuleIds.RemoveAll(rid => rid == dlg.Rule.Id);
                 foreach (var iid in dlg.SelectedInterfaceIds ?? Array.Empty<string>())
                 {
@@ -101,8 +96,7 @@ namespace Projet_Victor_c_
             var res = dlg.ShowDialog(this);
             if (res == DialogResult.OK && dlg.Interface != null)
             {
-                // interface object already updated by dialog
-                // ensure host interface list contains id (if host changed)
+                //on verifie l'association host - interface
                 foreach (var h in _ds.Hosts)
                 {
                     if (h.Id == dlg.Interface.HostId)
@@ -132,7 +126,6 @@ namespace Projet_Victor_c_
             var res = dlg.ShowDialog(this);
             if (res == DialogResult.OK && dlg.Host != null)
             {
-                // host object is updated in dialog
                 _ds.Save();
                 RefreshLists();
             }
@@ -161,7 +154,7 @@ namespace Projet_Victor_c_
             var res = dlg.ShowDialog(this);
             if (res == DialogResult.OK && dlg.Host != null)
             {
-                // ensure unique HostName again
+                // verifie si le nom n'existe pas déjà
                 if (_ds.Hosts.Any(h => string.Equals(h.HostName, dlg.Host.HostName, StringComparison.OrdinalIgnoreCase)))
                 {
                     MessageBox.Show(this, "Host name already exists.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -190,13 +183,13 @@ namespace Projet_Victor_c_
             var dr = MessageBox.Show(this, msg, "Confirm delete", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
             if (dr != DialogResult.OK) return;
 
-            // remove interfaces
+            // on remove les interfaces pour ce host
             foreach (var it in impacted)
             {
                 _ds.Interfaces.Remove(it);
             }
 
-            // remove host
+            // on remove le host
             _ds.Hosts.Remove(host);
             _ds.Save();
             RefreshLists();
@@ -207,7 +200,7 @@ namespace Projet_Victor_c_
             if (!_ds.Hosts.Any()) { MessageBox.Show("Add a host first"); return; }
 
             var hosts = _ds.Hosts.ToArray();
-            // pass existing identifiers for selected host
+            // on preselectionne le premier host
             var selectedHost = hosts.First();
             var existingIds = _ds.Interfaces.Where(i => i.HostId == selectedHost.Id).Select(i => i.Identifier).ToArray();
 
@@ -244,7 +237,7 @@ namespace Projet_Victor_c_
             if (res == DialogResult.OK && dlg.Rule != null)
             {
                 _ds.Rules.Add(dlg.Rule);
-                // attach to selected interfaces
+                // on associe la regle aux interfaces sélectionnées
                 foreach (var iid in dlg.SelectedInterfaceIds ?? Array.Empty<string>())
                 {
                     var ni = _ds.Interfaces.FirstOrDefault(i => i.Id == iid);
@@ -278,7 +271,7 @@ namespace Projet_Victor_c_
             var dr = MessageBox.Show(this, msg, "Confirm delete", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
             if (dr != DialogResult.OK) return;
 
-            // remove rule id from interfaces
+            // on remove la regle des interfaces qui l'utilisent
             foreach (var ni in impactedIf)
             {
                 ni.RuleIds.RemoveAll(rid => rid == rule.Id);

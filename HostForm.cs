@@ -19,10 +19,10 @@ namespace Projet_Victor_c_
 
         public Host Host { get; private set; }
 
-        // Constructor for creating new host
+        // constructeur du host 
         public HostForm(string[] existingNames) : this(existingNames, null) { }
 
-        // Constructor for editing existing host
+        // constructeur pour modifier le host
         public HostForm(string[] existingNames, Host hostToEdit)
         {
             _existingNames = existingNames ?? Array.Empty<string>();
@@ -54,7 +54,7 @@ namespace Projet_Victor_c_
             btnOk.Click += BtnOk_Click;
             btnCancel.Click += (s, e) => { this.DialogResult = DialogResult.Cancel; this.Close(); };
 
-            // If editing, pre-fill values
+            // si _editingHost n'est pas null, on remplit les champs avec les données existantes
             if (_editingHost != null)
             {
                 txtName.Text = _editingHost.HostName;
@@ -62,11 +62,12 @@ namespace Projet_Victor_c_
                 txtDesc.Text = _editingHost.Description ?? "";
                 txtTags.Text = string.Join(",", (_editingHost.Tags != null) ? _editingHost.Tags : new System.Collections.Generic.List<string>());
 
-                // when editing, exclude current name from uniqueness checks
+                // quand on edite un host, on doit exclure son nom des noms existants pour permettre de le garder inchangé
                 _existingNames = _existingNames.Where(n => !string.Equals(n, _editingHost.HostName, StringComparison.OrdinalIgnoreCase)).ToArray();
             }
         }
 
+        
         private void BtnOk_Click(object? sender, EventArgs e)
         {
             var name = txtName.Text?.Trim() ?? "";
@@ -77,7 +78,7 @@ namespace Projet_Victor_c_
                 return;
             }
 
-            if (name.Length > 200) // arbitrary limit
+            if (name.Length > 200) // j'ai mis une limite au hasard on peut la changer si besoin
             {
                 MessageBox.Show(this, "Host name too long.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -108,7 +109,7 @@ namespace Projet_Victor_c_
 
             if (_editingHost != null)
             {
-                // update existing host
+                // on modifie l'hôte existant
                 _editingHost.HostName = name;
                 _editingHost.OS = os;
                 _editingHost.Description = desc;
@@ -128,11 +129,6 @@ namespace Projet_Victor_c_
 
             this.DialogResult = DialogResult.OK;
             this.Close();
-        }
-
-        private void InitializeComponent()
-        {
-
         }
     }
 }

@@ -29,18 +29,18 @@ namespace Projet_Victor_c_
         public FirewallRule Rule { get; private set; }
         public string[] SelectedInterfaceIds { get; private set; }
 
+        //constructeur du firewall rule 
         public RuleForm(NetworkInterface[] interfaces, Func<string,bool> isIdentifierUsed, FirewallRule ruleToEdit = null)
         {
             _isIdentifierUsed = isIdentifierUsed;
             _editingRule = ruleToEdit;
             Text = ruleToEdit == null ? "Add Firewall Rule" : "Edit Firewall Rule";
-            // allow scrolling on small displays and use a reasonable default size
-            this.AutoScroll = true;
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             ClientSize = new Size(700, 560);
             StartPosition = FormStartPosition.CenterParent;
 
+            // y = hauteur qu'on modifie au fur et à mesure
             int y = 10;
             var lblId = new Label { Text = "Identifier:", Location = new Point(10, y), AutoSize = true };
             txtIdentifier = new TextBox { Location = new Point(120, y), Width = 540 };
@@ -88,7 +88,7 @@ namespace Projet_Victor_c_
             var lblIf = new Label { Text = "Attach to interfaces:", Location = new Point(10, y), AutoSize = true };
             clbInterfaces = new CheckedListBox { Location = new Point(10, y + 20), Width = 660 };
 
-            // set a height that leaves room for buttons inside the client area
+            
             int availableForList = this.ClientSize.Height - (clbInterfaces.Top + 90);
             clbInterfaces.Height = Math.Max(80, Math.Min(300, availableForList));
 
@@ -97,7 +97,7 @@ namespace Projet_Victor_c_
                 clbInterfaces.Items.Add(new CbItem(i.Identifier + " (host: " + (i.HostId?.Substring(0,8) ?? "") + ")", i.Id));
             }
 
-            // if editing, prefill values
+            // si on edite, on préremplit les champs
             if (_editingRule != null)
             {
                 txtIdentifier.Text = _editingRule.Identifier;
@@ -113,7 +113,6 @@ namespace Projet_Victor_c_
                 chkEnabled.Checked = _editingRule.Enabled;
             }
 
-            // place buttons inside visible client area below the list
             btnOk = new Button { Text = "OK", Size = new Size(80, 27) };
             btnCancel = new Button { Text = "Cancel", Size = new Size(80, 27) };
 
@@ -131,7 +130,6 @@ namespace Projet_Victor_c_
             btnCancel.Click += (s, e) => { this.DialogResult = DialogResult.Cancel; this.Close(); };
         }
 
-        // new method to preselect interface ids
         public void PreselectInterfaces(IEnumerable<string> interfaceIds)
         {
             if (interfaceIds == null) return;
@@ -148,7 +146,8 @@ namespace Projet_Victor_c_
             var id = txtIdentifier.Text?.Trim() ?? "";
             if (string.IsNullOrEmpty(id)) { MessageBox.Show(this, "Identifier is required.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
             if (id.Length > 200) { MessageBox.Show(this, "Identifier too long.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
-            if (_isIdentifierUsed(id)) { MessageBox.Show(this, "Identifier already used.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
+            //Si on edite on peut laisser le meme id
+            if (_isIdentifierUsed(id) && _editingRule == null) { MessageBox.Show(this, "Identifier already used.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
 
             var desc = txtDescription.Text ?? "";
             if (desc.Length > 200) { MessageBox.Show(this, "Description too long (200 chars).", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
@@ -164,8 +163,8 @@ namespace Projet_Victor_c_
             var enabled = chkEnabled.Checked;
 
             // basic ports format validation
-            if (!string.IsNullOrWhiteSpace(localPorts) && !IsValidPortSpec(localPorts)) { MessageBox.Show(this, "Invalid local ports format.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
-            if (!string.IsNullOrWhiteSpace(remotePorts) && !IsValidPortSpec(remotePorts)) { MessageBox.Show(this, "Invalid remote ports format.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
+            if (!string.IsNullOrWhiteSpace(localPorts) && !IsValidPortSpecification(localPorts)) { MessageBox.Show(this, "Invalid local ports format.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
+            if (!string.IsNullOrWhiteSpace(remotePorts) && !IsValidPortSpecification(remotePorts)) { MessageBox.Show(this, "Invalid remote ports format.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
 
             var selected = new List<string>();
             for (int i = 0; i < clbInterfaces.Items.Count; i++)
@@ -178,7 +177,6 @@ namespace Projet_Victor_c_
 
             if (_editingRule != null)
             {
-                // update existing rule
                 _editingRule.Identifier = id;
                 _editingRule.Description = desc;
                 _editingRule.Action = action == "Block" ? RuleAction.Block : RuleAction.Allow;
@@ -216,28 +214,49 @@ namespace Projet_Victor_c_
             this.Close();
         }
 
-        private bool IsValidPortSpec(string spec)
+        private const int MinPort = 0;
+        private const int MaxPort = 65535;
+
+        private bool IsValidPortSpecification(string spec)
         {
-            // accept single number, semicolon-separated list, or ranges with dash
-            // tokens like: 31;10-20;1024
-            var tokens = spec.Split(';', StringSplitOptions.RemoveEmptyEntries);
-            foreach (var t in tokens)
+            if (string.IsNullOrWhiteSpace(spec))
             {
-                var s = t.Trim();
-                if (s.Contains('-'))
+                return false;
+            }
+
+            foreach (string token in spec.Split(';', StringSplitOptions.RemoveEmptyEntries))
+            {
+                string value = token.Trim();
+
+                if (value.Contains('-'))
                 {
-                    var parts = s.Split('-');
-                    if (parts.Length != 2) return false;
-                    if (!int.TryParse(parts[0], out var a) || !int.TryParse(parts[1], out var b)) return false;
-                    if (a < 0 || b < 0 || a > 65535 || b > 65535 || a > b) return false;
+                    string[] range = value.Split('-');
+
+                    if (range.Length != 2 ||
+                        !int.TryParse(range[0], out int start) ||
+                        !int.TryParse(range[1], out int end) ||
+                        !IsValidPort(start) ||
+                        !IsValidPort(end) ||
+                        start > end)
+                    {
+                        return false;
+                    }
                 }
                 else
                 {
-                    if (!int.TryParse(s, out var v)) return false;
-                    if (v < 0 || v > 65535) return false;
+                    if (!int.TryParse(value, out int port) || !IsValidPort(port))
+                    {
+                        return false;
+                    }
                 }
             }
+
             return true;
+        }
+
+        private static bool IsValidPort(int port)
+        {
+            return port >= MinPort && port <= MaxPort;
         }
 
         class CbItem { public string Text { get; } public string Value { get; } public CbItem(string t, string v) { Text = t; Value = v; } public override string ToString() => Text; }

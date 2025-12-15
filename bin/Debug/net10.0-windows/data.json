@@ -1,21 +1,21 @@
 {
   "Hosts": [
     {
-      "Id": "7e146863-4239-42b6-9b54-6bb2b0f3e92d",
-      "HostName": "vic",
+      "Id": "c716ab80-021e-4f36-9982-a933bd90b3cd",
+      "HostName": "Vic",
       "OS": 0,
       "Description": "",
       "Tags": [],
       "InterfaceIds": [
-        "f57b81d4-aee6-40f8-af76-cd05b0f04127"
+        "bc1cda3e-83c7-4a6f-a1f5-44ecd21b11e2"
       ]
     }
   ],
   "Interfaces": [
     {
-      "Id": "f57b81d4-aee6-40f8-af76-cd05b0f04127",
-      "Identifier": "1234",
-      "HostId": "7e146863-4239-42b6-9b54-6bb2b0f3e92d",
+      "Id": "bc1cda3e-83c7-4a6f-a1f5-44ecd21b11e2",
+      "Identifier": "234",
+      "HostId": "c716ab80-021e-4f36-9982-a933bd90b3cd",
       "Description": "",
       "Status": 0,
       "MacAddress": "",
@@ -25,8 +25,25 @@
       "DHCP": false,
       "DnsPrimary": "",
       "DnsSecondary": "",
-      "RuleIds": []
+      "RuleIds": [
+        "f36d68ba-8287-43a7-9d00-b971ca054663"
+      ]
     }
   ],
-  "Rules": []
+  "Rules": [
+    {
+      "Id": "f36d68ba-8287-43a7-9d00-b971ca054663",
+      "Identifier": "1234",
+      "Description": "",
+      "Action": 1,
+      "Program": "",
+      "PortType": 0,
+      "LocalPorts": "",
+      "RemotePorts": "",
+      "LocalAddress": "",
+      "RemoteAddress": "",
+      "Tag": "",
+      "Enabled": true
+    }
+  ]
 }

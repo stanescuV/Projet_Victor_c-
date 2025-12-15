@@ -26,6 +26,7 @@ namespace Projet_Victor_c_
         private string[] _existingIdsOnHost;
         private Func<string, bool> _isMacUsed;
         private Func<string, bool> _isIpUsed;
+        //un boolean editing pour savoir si on est en mode edition ou 
         private NetworkInterface _editingInterface;
 
         public NetworkInterface Interface { get; private set; }
@@ -41,6 +42,7 @@ namespace Projet_Victor_c_
             ClientSize = new Size(480, 420);
             StartPosition = FormStartPosition.CenterParent;
 
+            //y = hauteur qu'on va modifier au fur et à mesure
             var y = 10;
             var lblHost = new Label { Text = "Host:", Location = new Point(10, y), AutoSize = true };
             cbHost = new ComboBox { Location = new Point(120, y), Width = 340, DropDownStyle = ComboBoxStyle.DropDownList };
@@ -95,7 +97,8 @@ namespace Projet_Victor_c_
             btnOk.Click += BtnOk_Click;
             btnCancel.Click += (s, e) => { this.DialogResult = DialogResult.Cancel; this.Close(); };
 
-            // if editing, prefill values
+            //si editing qlors on verifie sur quel host on a cliqué 
+            // on passe dans chaque host et on regarde si l'id du host cliqué est égal à l'id d'un des host
             if (_editingInterface != null)
             {
                 // select host
