@@ -26,16 +26,18 @@ namespace Projet_Victor_c_
         private string[] _existingIdsOnHost;
         private Func<string, bool> _isMacUsed;
         private Func<string, bool> _isIpUsed;
+        private NetworkInterface _editingInterface;
 
         public NetworkInterface Interface { get; private set; }
 
-        public InterfaceForm(Host[] hosts, string[] existingIdsOnHost, Func<string,bool> isMacUsed, Func<string,bool> isIpUsed)
+        public InterfaceForm(Host[] hosts, string[] existingIdsOnHost, Func<string,bool> isMacUsed, Func<string,bool> isIpUsed, NetworkInterface interfaceToEdit = null)
         {
             _existingIdsOnHost = existingIdsOnHost ?? Array.Empty<string>();
             _isMacUsed = isMacUsed;
             _isIpUsed = isIpUsed;
+            _editingInterface = interfaceToEdit;
 
-            Text = "Add Network Interface";
+            Text = interfaceToEdit == null ? "Add Network Interface" : "Edit Network Interface";
             ClientSize = new Size(480, 420);
             StartPosition = FormStartPosition.CenterParent;
 
@@ -92,6 +94,30 @@ namespace Projet_Victor_c_
 
             btnOk.Click += BtnOk_Click;
             btnCancel.Click += (s, e) => { this.DialogResult = DialogResult.Cancel; this.Close(); };
+
+            // if editing, prefill values
+            if (_editingInterface != null)
+            {
+                // select host
+                for (int i = 0; i < cbHost.Items.Count; i++)
+                {
+                    var item = (ComboBoxItem)cbHost.Items[i];
+                    if (item.Value == _editingInterface.HostId) { cbHost.SelectedIndex = i; break; }
+                }
+                txtIdentifier.Text = _editingInterface.Identifier;
+                txtDescription.Text = _editingInterface.Description ?? "";
+                cbStatus.SelectedItem = _editingInterface.Status == IfStatus.Up ? "Up" : "Down";
+                txtMac.Text = _editingInterface.MacAddress ?? "";
+                txtIP.Text = _editingInterface.IP ?? "";
+                txtMask.Text = _editingInterface.SubnetMask ?? "";
+                txtGateway.Text = _editingInterface.Gateway ?? "";
+                chkDhcp.Checked = _editingInterface.DHCP;
+                txtDns1.Text = _editingInterface.DnsPrimary ?? "";
+                txtDns2.Text = _editingInterface.DnsSecondary ?? "";
+
+                // exclude current identifier from uniqueness checks
+                _existingIdsOnHost = _existingIdsOnHost.Where(x => !string.Equals(x, _editingInterface.Identifier, StringComparison.OrdinalIgnoreCase)).ToArray();
+            }
         }
 
         private void BtnOk_Click(object? sender, EventArgs e)
@@ -142,20 +168,40 @@ namespace Projet_Victor_c_
             var status = cbStatus.SelectedItem as string ?? "Down";
             var dhcp = chkDhcp.Checked;
 
-            Interface = new NetworkInterface
+            if (_editingInterface != null)
             {
-                Identifier = id,
-                Description = desc,
-                Status = status == "Up" ? IfStatus.Up : IfStatus.Down,
-                MacAddress = mac,
-                IP = ip,
-                SubnetMask = mask,
-                Gateway = gw,
-                DHCP = dhcp,
-                DnsPrimary = dns1,
-                DnsSecondary = dns2,
-                HostId = hostId
-            };
+                // update existing
+                _editingInterface.Identifier = id;
+                _editingInterface.Description = desc;
+                _editingInterface.Status = status == "Up" ? IfStatus.Up : IfStatus.Down;
+                _editingInterface.MacAddress = mac;
+                _editingInterface.IP = ip;
+                _editingInterface.SubnetMask = mask;
+                _editingInterface.Gateway = gw;
+                _editingInterface.DHCP = dhcp;
+                _editingInterface.DnsPrimary = dns1;
+                _editingInterface.DnsSecondary = dns2;
+                _editingInterface.HostId = hostId;
+
+                Interface = _editingInterface;
+            }
+            else
+            {
+                Interface = new NetworkInterface
+                {
+                    Identifier = id,
+                    Description = desc,
+                    Status = status == "Up" ? IfStatus.Up : IfStatus.Down,
+                    MacAddress = mac,
+                    IP = ip,
+                    SubnetMask = mask,
+                    Gateway = gw,
+                    DHCP = dhcp,
+                    DnsPrimary = dns1,
+                    DnsSecondary = dns2,
+                    HostId = hostId
+                };
+            }
 
             this.DialogResult = DialogResult.OK;
             this.Close();

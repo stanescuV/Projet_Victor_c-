@@ -1,21 +1,21 @@
 {
   "Hosts": [
     {
-      "Id": "4459455c-747f-4793-a72a-e329a828305e",
+      "Id": "f187759c-2a69-4891-a5e9-dcdf3560da1f",
       "HostName": "vic",
-      "OS": 0,
+      "OS": 1,
       "Description": "",
       "Tags": [],
       "InterfaceIds": [
-        "87ec2424-25c6-4fe9-bfd2-8b851302303d"
+        "65979249-cff9-404d-b8a6-faac425e933c"
       ]
     }
   ],
   "Interfaces": [
     {
-      "Id": "87ec2424-25c6-4fe9-bfd2-8b851302303d",
-      "Identifier": "vicasd123",
-      "HostId": "4459455c-747f-4793-a72a-e329a828305e",
+      "Id": "65979249-cff9-404d-b8a6-faac425e933c",
+      "Identifier": "1234",
+      "HostId": "f187759c-2a69-4891-a5e9-dcdf3560da1f",
       "Description": "",
       "Status": 0,
       "MacAddress": "",
@@ -25,25 +25,8 @@
       "DHCP": false,
       "DnsPrimary": "",
       "DnsSecondary": "",
-      "RuleIds": [
-        "fe7b15ec-6fc1-4440-858f-18f8c08fac24"
-      ]
+      "RuleIds": []
     }
   ],
-  "Rules": [
-    {
-      "Id": "fe7b15ec-6fc1-4440-858f-18f8c08fac24",
-      "Identifier": "sadasd",
-      "Description": "",
-      "Action": 1,
-      "Program": "",
-      "PortType": 0,
-      "LocalPorts": "",
-      "RemotePorts": "",
-      "LocalAddress": "",
-      "RemoteAddress": "",
-      "Tag": "",
-      "Enabled": true
-    }
-  ]
+  "Rules": []
 }

@@ -46,10 +46,78 @@ namespace Projet_Victor_c_
             btnDeleteRule.Click += BtnDeleteRule_Click;
 
             listBoxHosts.DoubleClick += ListBoxHosts_DoubleClick;
+            listBoxIf.DoubleClick += ListBoxIf_DoubleClick;
+            listBoxRules.DoubleClick += ListBoxRules_DoubleClick;
 
             var file = System.IO.Path.Combine(AppContext.BaseDirectory, "data.json");
             _ds = new DataStore(file);
             RefreshLists();
+        }
+
+        private void ListBoxRules_DoubleClick(object? sender, EventArgs e)
+        {
+            if (listBoxRules.SelectedIndex < 0) return;
+            var idx = listBoxRules.SelectedIndex;
+            if (idx >= _ds.Rules.Count) return;
+            var rule = _ds.Rules[idx];
+
+            var interfaces = _ds.Interfaces.ToArray();
+            using var dlg = new RuleForm(interfaces, id => _ds.Rules.Any(r => string.Equals(r.Identifier, id, StringComparison.OrdinalIgnoreCase)), rule);
+
+            // prepare list of interface ids that currently reference this rule
+            var attachedInterfaceIds = _ds.Interfaces.Where(i => i.RuleIds.Contains(rule.Id)).Select(i => i.Id).ToArray();
+            dlg.PreselectInterfaces(attachedInterfaceIds);
+
+            var res = dlg.ShowDialog(this);
+            if (res == DialogResult.OK && dlg.Rule != null)
+            {
+                // rule updated in dlg.Rule
+                // detach rule id from all interfaces then attach to selected ones
+                foreach (var ni in _ds.Interfaces) ni.RuleIds.RemoveAll(rid => rid == dlg.Rule.Id);
+                foreach (var iid in dlg.SelectedInterfaceIds ?? Array.Empty<string>())
+                {
+                    var ni = _ds.Interfaces.FirstOrDefault(i => i.Id == iid);
+                    if (ni != null)
+                    {
+                        ni.RuleIds.Add(dlg.Rule.Id);
+                    }
+                }
+                _ds.Save();
+                RefreshLists();
+            }
+        }
+
+        private void ListBoxIf_DoubleClick(object? sender, EventArgs e)
+        {
+            if (listBoxIf.SelectedIndex < 0) return;
+            var idx = listBoxIf.SelectedIndex;
+            if (idx >= _ds.Interfaces.Count) return;
+            var ni = _ds.Interfaces[idx];
+
+            var hosts = _ds.Hosts.ToArray();
+            var existingIds = _ds.Interfaces.Where(i => i.HostId == ni.HostId && i.Id != ni.Id).Select(i => i.Identifier).ToArray();
+
+            using var dlg = new InterfaceForm(hosts, existingIds, mac => IsMacUsed(mac), ip => IsIpUsed(ip), ni);
+            var res = dlg.ShowDialog(this);
+            if (res == DialogResult.OK && dlg.Interface != null)
+            {
+                // interface object already updated by dialog
+                // ensure host interface list contains id (if host changed)
+                foreach (var h in _ds.Hosts)
+                {
+                    if (h.Id == dlg.Interface.HostId)
+                    {
+                        if (!h.InterfaceIds.Contains(dlg.Interface.Id)) h.InterfaceIds.Add(dlg.Interface.Id);
+                    }
+                    else
+                    {
+                        h.InterfaceIds.RemoveAll(id => id == dlg.Interface.Id);
+                    }
+                }
+
+                _ds.Save();
+                RefreshLists();
+            }
         }
 
         private void ListBoxHosts_DoubleClick(object? sender, EventArgs e)

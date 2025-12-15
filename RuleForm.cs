@@ -24,17 +24,21 @@ namespace Projet_Victor_c_
         private Button btnOk, btnCancel;
 
         private Func<string,bool> _isIdentifierUsed;
+        private FirewallRule _editingRule;
 
         public FirewallRule Rule { get; private set; }
         public string[] SelectedInterfaceIds { get; private set; }
 
-        public RuleForm(NetworkInterface[] interfaces, Func<string,bool> isIdentifierUsed)
+        public RuleForm(NetworkInterface[] interfaces, Func<string,bool> isIdentifierUsed, FirewallRule ruleToEdit = null)
         {
             _isIdentifierUsed = isIdentifierUsed;
-            Text = "Add Firewall Rule";
+            _editingRule = ruleToEdit;
+            Text = ruleToEdit == null ? "Add Firewall Rule" : "Edit Firewall Rule";
             // allow scrolling on small displays and use a reasonable default size
             this.AutoScroll = true;
-            ClientSize = new Size(700, 520);
+            this.FormBorderStyle = FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            ClientSize = new Size(700, 560);
             StartPosition = FormStartPosition.CenterParent;
 
             int y = 10;
@@ -84,39 +88,59 @@ namespace Projet_Victor_c_
             var lblIf = new Label { Text = "Attach to interfaces:", Location = new Point(10, y), AutoSize = true };
             clbInterfaces = new CheckedListBox { Location = new Point(10, y + 20), Width = 660 };
 
-            // set checkedlistbox height based on number of interfaces but cap to keep buttons visible
-            int itemHeight = 20;
-            int desiredHeight = interfaces.Length * itemHeight + 10;
-            int maxHeight = 300;
-            clbInterfaces.Height = Math.Min(Math.Max(80, desiredHeight), maxHeight);
+            // set a height that leaves room for buttons inside the client area
+            int availableForList = this.ClientSize.Height - (clbInterfaces.Top + 90);
+            clbInterfaces.Height = Math.Max(80, Math.Min(300, availableForList));
 
             foreach (var i in interfaces)
             {
                 clbInterfaces.Items.Add(new CbItem(i.Identifier + " (host: " + (i.HostId?.Substring(0,8) ?? "") + ")", i.Id));
             }
 
-            // place buttons below the checked list box
+            // if editing, prefill values
+            if (_editingRule != null)
+            {
+                txtIdentifier.Text = _editingRule.Identifier;
+                txtDescription.Text = _editingRule.Description ?? "";
+                cbAction.SelectedItem = _editingRule.Action == RuleAction.Block ? "Block" : "Allow";
+                txtProgram.Text = _editingRule.Program ?? "";
+                cbPortType.SelectedItem = _editingRule.PortType == PortType.UDP ? "UDP" : "TCP";
+                txtLocalPorts.Text = _editingRule.LocalPorts ?? "";
+                txtRemotePorts.Text = _editingRule.RemotePorts ?? "";
+                txtLocalAddress.Text = _editingRule.LocalAddress ?? "";
+                txtRemoteAddress.Text = _editingRule.RemoteAddress ?? "";
+                txtTag.Text = _editingRule.Tag ?? "";
+                chkEnabled.Checked = _editingRule.Enabled;
+            }
+
+            // place buttons inside visible client area below the list
             btnOk = new Button { Text = "OK", Size = new Size(80, 27) };
             btnCancel = new Button { Text = "Cancel", Size = new Size(80, 27) };
 
-            btnOk.Left = this.ClientSize.Width - 180;
-            btnCancel.Left = this.ClientSize.Width - 90;
-            btnOk.Top = clbInterfaces.Bottom + 20;
-            btnCancel.Top = clbInterfaces.Bottom + 20;
+            int buttonsTop = clbInterfaces.Bottom + 10;
+            if (buttonsTop + 40 > this.ClientSize.Height) buttonsTop = this.ClientSize.Height - 50;
+            btnOk.Location = new Point(this.ClientSize.Width - 180, buttonsTop);
+            btnCancel.Location = new Point(this.ClientSize.Width - 90, buttonsTop);
 
-            // ensure buttons stay visible when form is resized
             btnOk.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
 
-            // add controls
             Controls.AddRange(new Control[] { lblId, txtIdentifier, lblDesc, txtDescription, lblAction, cbAction, lblProgram, txtProgram, lblPortType, cbPortType, lblLocalPorts, txtLocalPorts, lblRemotePorts, txtRemotePorts, lblLocalAddr, txtLocalAddress, lblRemoteAddr, txtRemoteAddress, lblTag, txtTag, lblEnabled, chkEnabled, lblIf, clbInterfaces, btnOk, btnCancel });
-
-            // increase form height if needed to show buttons but keep AutoScroll to support small screens
-            int neededHeight = btnOk.Bottom + 40;
-            if (neededHeight > this.ClientSize.Height) this.ClientSize = new Size(this.ClientSize.Width, Math.Min(neededHeight, 800));
 
             btnOk.Click += BtnOk_Click;
             btnCancel.Click += (s, e) => { this.DialogResult = DialogResult.Cancel; this.Close(); };
+        }
+
+        // new method to preselect interface ids
+        public void PreselectInterfaces(IEnumerable<string> interfaceIds)
+        {
+            if (interfaceIds == null) return;
+            var set = new HashSet<string>(interfaceIds);
+            for (int i = 0; i < clbInterfaces.Items.Count; i++)
+            {
+                var item = (CbItem)clbInterfaces.Items[i];
+                if (set.Contains(item.Value)) clbInterfaces.SetItemChecked(i, true);
+            }
         }
 
         private void BtnOk_Click(object? sender, EventArgs e)
@@ -152,20 +176,40 @@ namespace Projet_Victor_c_
                 }
             }
 
-            Rule = new FirewallRule
+            if (_editingRule != null)
             {
-                Identifier = id,
-                Description = desc,
-                Action = action == "Block" ? RuleAction.Block : RuleAction.Allow,
-                Program = prog,
-                PortType = portType == "UDP" ? PortType.UDP : PortType.TCP,
-                LocalPorts = localPorts,
-                RemotePorts = remotePorts,
-                LocalAddress = localAddr,
-                RemoteAddress = remoteAddr,
-                Tag = tag,
-                Enabled = enabled
-            };
+                // update existing rule
+                _editingRule.Identifier = id;
+                _editingRule.Description = desc;
+                _editingRule.Action = action == "Block" ? RuleAction.Block : RuleAction.Allow;
+                _editingRule.Program = prog;
+                _editingRule.PortType = portType == "UDP" ? PortType.UDP : PortType.TCP;
+                _editingRule.LocalPorts = localPorts;
+                _editingRule.RemotePorts = remotePorts;
+                _editingRule.LocalAddress = localAddr;
+                _editingRule.RemoteAddress = remoteAddr;
+                _editingRule.Tag = tag;
+                _editingRule.Enabled = enabled;
+
+                Rule = _editingRule;
+            }
+            else
+            {
+                Rule = new FirewallRule
+                {
+                    Identifier = id,
+                    Description = desc,
+                    Action = action == "Block" ? RuleAction.Block : RuleAction.Allow,
+                    Program = prog,
+                    PortType = portType == "UDP" ? PortType.UDP : PortType.TCP,
+                    LocalPorts = localPorts,
+                    RemotePorts = remotePorts,
+                    LocalAddress = localAddr,
+                    RemoteAddress = remoteAddr,
+                    Tag = tag,
+                    Enabled = enabled
+                };
+            }
 
             SelectedInterfaceIds = selected.ToArray();
             this.DialogResult = DialogResult.OK;
