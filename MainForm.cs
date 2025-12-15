@@ -18,7 +18,7 @@ namespace Projet_Victor_c_
 
         public MainForm()
         {
-            Text = "Network Manager - Simple";
+            Text = "Manager Reseaux";
             ClientSize = new Size(900, 500);
             StartPosition = FormStartPosition.CenterScreen;
 

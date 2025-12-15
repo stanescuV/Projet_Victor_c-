@@ -1,39 +1,10 @@
 {
-  "Hosts": [
-    {
-      "Id": "c716ab80-021e-4f36-9982-a933bd90b3cd",
-      "HostName": "Vic",
-      "OS": 0,
-      "Description": "",
-      "Tags": [],
-      "InterfaceIds": [
-        "bc1cda3e-83c7-4a6f-a1f5-44ecd21b11e2"
-      ]
-    }
-  ],
-  "Interfaces": [
-    {
-      "Id": "bc1cda3e-83c7-4a6f-a1f5-44ecd21b11e2",
-      "Identifier": "234",
-      "HostId": "c716ab80-021e-4f36-9982-a933bd90b3cd",
-      "Description": "",
-      "Status": 0,
-      "MacAddress": "",
-      "IP": "",
-      "SubnetMask": "",
-      "Gateway": "",
-      "DHCP": false,
-      "DnsPrimary": "",
-      "DnsSecondary": "",
-      "RuleIds": [
-        "f36d68ba-8287-43a7-9d00-b971ca054663"
-      ]
-    }
-  ],
+  "Hosts": [],
+  "Interfaces": [],
   "Rules": [
     {
-      "Id": "f36d68ba-8287-43a7-9d00-b971ca054663",
-      "Identifier": "1234",
+      "Id": "24b8b715-a974-4109-940d-a3e85ce0f619",
+      "Identifier": "12344",
       "Description": "",
       "Action": 1,
       "Program": "",
