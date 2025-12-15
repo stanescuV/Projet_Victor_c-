@@ -1,0 +1,66 @@
+Gestion client
+Mini
+projet
+Contexte
+Un client vous demande une application permettant de simplifier la 
+gestion réseau pour des utilisateurs ayant peu de compétences IT.
+Vous devez faire une application permettant de configurer les 
+interfaces réseaux et les règles firewall des machines de 
+l’entreprise.
+Vous avez pour mission de faire les écrans et la sauvegarde de cette 
+configuration, le déploiement automatique de cette configuration 
+sur le réseau ne fait pas partie de votre mission.
+Général
+Votre application devra gérer:
+Des hôtes
+Des interfaces réseau
+Des règles firewall
+Pour chaque élément ci-dessus il faudra:
+Création/Mise à jour/Suppression
+Sauvegarde/Chargement des données/Validation/Recherche
+
+Une interface réseau
+Une interface contient:
+Identifiant
+Description (optionnel < 200 caractères)
+Status (Up/Down)
+Adresse MAC (format valide)
+Adresse IP v4 ou v6 (format valide)
+Masque de sous réseau (format valide)
+Passerelle par défaut (format valide)
+DHCP (activé/désactivé)
+Adresse DNS (primaire et secondaire)
+Une interface réseau
+Est liée à un hôte
+Les adresses IP et MAC doivent être uniques sur l’ensemble du 
+réseau
+L’identifiant doit être unique sur l’hôte
+Une règle firewall
+Une règle Firewall contient:
+Identifiant (unique)
+Description (optionnelle <200 caractères)
+Action (Bloquer/Autoriser)
+Programme (chemin/service)
+Type de port (TCP / UDP)
+Port local ( ex: 31;10-20;1024) port seul, multiples, ranges.
+Port distant ( ex: 31;10-20;1024) port seul, multiples, ranges.
+Adresse locale (ou plage)
+Adresse distante (ou plage)
+Un Tag
+Activé/Désactivé
+Une règle firewall
+Lors de la suppression d’une règle, afficher lors de la confirmation 
+la liste des hôtes/interfaces impactées.
+Ecran récapitulatif
+Il faut avoir la possibilité de lister pour chaque hôte l’ensemble des 
+règles applicables à chaque interface réseau.
+Il faut pour chaque règle pouvoir afficher les hôtes/interfaces qui 
+l’utilisent.
+Recherche pour filtrer les éléments.
+Notation
+Gestion des hôtes: 4pts
+Gestion des interfaces: 4pts
+Gestion des règles firewall: 4pts
+Tests automatisés du métier + ViewModel: 6pts
+Traduction Anglais/Français: 2pt
+Propreté du code: +2pt

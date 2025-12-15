@@ -1,0 +1,20 @@
+{
+  "Hosts": [],
+  "Interfaces": [],
+  "Rules": [
+    {
+      "Id": "b55eaf0f-f4bc-4f62-bba6-9b99c6b40a4f",
+      "Identifier": "rule-1",
+      "Description": "",
+      "Action": 1,
+      "Program": "",
+      "PortType": 0,
+      "LocalPorts": "",
+      "RemotePorts": "",
+      "LocalAddress": "",
+      "RemoteAddress": "",
+      "Tag": "",
+      "Enabled": true
+    }
+  ]
+}
