@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
 
 namespace Projet_Victor_c_
 {
@@ -22,12 +19,12 @@ namespace Projet_Victor_c_
     public class NetworkInterface
     {
         public string Id { get; set; } = Guid.NewGuid().ToString();
-        public string Identifier { get; set; } = ""; // unique per host
+        public string Identifier { get; set; } = ""; 
         public string HostId { get; set; } = "";
         public string Description { get; set; } = "";
         public IfStatus Status { get; set; } = IfStatus.Down;
         public string MacAddress { get; set; } = "";
-        public string IP { get; set; } = ""; // v4 or v6
+        public string IP { get; set; } = ""; 
         public string SubnetMask { get; set; } = "";
         public string Gateway { get; set; } = "";
         public bool DHCP { get; set; } = false;
@@ -38,8 +35,9 @@ namespace Projet_Victor_c_
 
     public class FirewallRule
     {
+        //guid existe déjà en c# donc pas besoin de l'importer
         public string Id { get; set; } = Guid.NewGuid().ToString();
-        public string Identifier { get; set; } = ""; // unique
+        public string Identifier { get; set; } = ""; 
         public string Description { get; set; } = "";
         public RuleAction Action { get; set; } = RuleAction.Allow;
         public string Program { get; set; } = "";

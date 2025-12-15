@@ -1,11 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
+
 using System.Text.Json;
 
 namespace Projet_Victor_c_
 {
-    // Very small JSON file-based datastore
+    //un service pour stocker et getter principalement les données 
     public class DataStore
     {
         public List<Host> Hosts { get; set; } = new();
