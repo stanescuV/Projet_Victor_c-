@@ -15,12 +15,20 @@ namespace Projet_Victor_c_
         private Button btnCancel;
         private string[] _existingNames;
 
+        private Host _editingHost;
+
         public Host Host { get; private set; }
 
-        public HostForm(string[] existingNames)
+        // Constructor for creating new host
+        public HostForm(string[] existingNames) : this(existingNames, null) { }
+
+        // Constructor for editing existing host
+        public HostForm(string[] existingNames, Host hostToEdit)
         {
             _existingNames = existingNames ?? Array.Empty<string>();
-            Text = "Add Host";
+            _editingHost = hostToEdit;
+
+            Text = hostToEdit == null ? "Add Host" : "Edit Host";
             ClientSize = new Size(400, 320);
             StartPosition = FormStartPosition.CenterParent;
 
@@ -45,6 +53,18 @@ namespace Projet_Victor_c_
 
             btnOk.Click += BtnOk_Click;
             btnCancel.Click += (s, e) => { this.DialogResult = DialogResult.Cancel; this.Close(); };
+
+            // If editing, pre-fill values
+            if (_editingHost != null)
+            {
+                txtName.Text = _editingHost.HostName;
+                cbOS.SelectedItem = _editingHost.OS.ToString();
+                txtDesc.Text = _editingHost.Description ?? "";
+                txtTags.Text = string.Join(",", (_editingHost.Tags != null) ? _editingHost.Tags : new System.Collections.Generic.List<string>());
+
+                // when editing, exclude current name from uniqueness checks
+                _existingNames = _existingNames.Where(n => !string.Equals(n, _editingHost.HostName, StringComparison.OrdinalIgnoreCase)).ToArray();
+            }
         }
 
         private void BtnOk_Click(object? sender, EventArgs e)
@@ -86,13 +106,25 @@ namespace Projet_Victor_c_
             else if (sel == "Mac") os = OSKind.Mac;
             else os = OSKind.Other;
 
-            Host = new Host
+            if (_editingHost != null)
             {
-                HostName = name,
-                OS = os,
-                Description = desc,
-                Tags = tags
-            };
+                // update existing host
+                _editingHost.HostName = name;
+                _editingHost.OS = os;
+                _editingHost.Description = desc;
+                _editingHost.Tags = tags;
+                Host = _editingHost;
+            }
+            else
+            {
+                Host = new Host
+                {
+                    HostName = name,
+                    OS = os,
+                    Description = desc,
+                    Tags = tags
+                };
+            }
 
             this.DialogResult = DialogResult.OK;
             this.Close();

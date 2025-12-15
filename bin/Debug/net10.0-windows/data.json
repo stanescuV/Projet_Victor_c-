@@ -1,10 +1,39 @@
 {
-  "Hosts": [],
-  "Interfaces": [],
+  "Hosts": [
+    {
+      "Id": "4459455c-747f-4793-a72a-e329a828305e",
+      "HostName": "vic",
+      "OS": 0,
+      "Description": "",
+      "Tags": [],
+      "InterfaceIds": [
+        "87ec2424-25c6-4fe9-bfd2-8b851302303d"
+      ]
+    }
+  ],
+  "Interfaces": [
+    {
+      "Id": "87ec2424-25c6-4fe9-bfd2-8b851302303d",
+      "Identifier": "vicasd123",
+      "HostId": "4459455c-747f-4793-a72a-e329a828305e",
+      "Description": "",
+      "Status": 0,
+      "MacAddress": "",
+      "IP": "",
+      "SubnetMask": "",
+      "Gateway": "",
+      "DHCP": false,
+      "DnsPrimary": "",
+      "DnsSecondary": "",
+      "RuleIds": [
+        "fe7b15ec-6fc1-4440-858f-18f8c08fac24"
+      ]
+    }
+  ],
   "Rules": [
     {
-      "Id": "b55eaf0f-f4bc-4f62-bba6-9b99c6b40a4f",
-      "Identifier": "rule-1",
+      "Id": "fe7b15ec-6fc1-4440-858f-18f8c08fac24",
+      "Identifier": "sadasd",
       "Description": "",
       "Action": 1,
       "Program": "",
