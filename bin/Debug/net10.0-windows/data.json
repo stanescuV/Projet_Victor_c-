@@ -1,5 +1,38 @@
 {
-  "Hosts": [],
+  "Hosts": [
+    {
+      "Id": "a2dde194-ab36-4972-a733-b971e6ad5e9e",
+      "HostName": "test",
+      "OS": "windows",
+      "Description": "",
+      "Tags": [],
+      "InterfaceIds": []
+    },
+    {
+      "Id": "8388745f-b273-465d-b1be-f2250886714a",
+      "HostName": "test 2",
+      "OS": "windows",
+      "Description": "",
+      "Tags": [],
+      "InterfaceIds": []
+    }
+  ],
   "Interfaces": [],
-  "Rules": []
+  "Rules": [
+    {
+      "Id": "9e2eaa55-cd1d-4d3f-91dc-6a00ef834250",
+      "Identifier": "testse 33",
+      "Description": "",
+      "Action": "allow",
+      "Program": "",
+      "PortType": "tcp",
+      "LocalPorts": "",
+      "RemotePorts": "",
+      "LocalAddress": "",
+      "RemoteAddress": "",
+      "Tag": "",
+      "Enabled": true
+    }
+  ],
+  "Path": "C:\\Users\\stane\\Desktop\\cod\\Projet_Victor_c#\\Projet_Victor_c#\\bin\\Debug\\net10.0-windows\\data.json"
 }

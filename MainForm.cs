@@ -49,9 +49,39 @@ namespace Projet_Victor_c_
 
             var file = Path.Combine(AppContext.BaseDirectory, "data.json");
             _ds = new DataStore(file);
-            RefreshLists();
+
+            // Ensure we reload latest data from disk and display it if it contains items
+            try
+            {
+                _ds.Load();
+            }
+            catch { }
+
+            if ((_ds.Hosts?.Count ?? 0) + (_ds.Interfaces?.Count ?? 0) + (_ds.Rules?.Count ?? 0) > 0)
+            {
+                RefreshLists();
+            }
+            else
+            {
+                // still call RefreshLists to ensure UI is initialized
+                RefreshLists();
+            }
         }
 
+        // Saves everything in the datastore (single place to persist all data)
+        private void SaveAll()
+        {
+            // Persist the datastore to its configured path
+            try
+            {
+                _ds.Save();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, "Error saving data: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        
         private void ListBoxRules_DoubleClick(object? sender, EventArgs e)
         {
             if (listBoxRules.SelectedIndex < 0) return;
@@ -283,12 +313,6 @@ namespace Projet_Victor_c_
             RefreshLists();
         }
 
-        private void BtnSave_Click(object? sender, EventArgs e)
-        {
-            _ds.Save();
-            MessageBox.Show("Saved");
-        }
-
         private void BtnDeleteIf_Click(object? sender, EventArgs e)
         {
             if (listBoxIf.SelectedIndex < 0)
@@ -322,6 +346,20 @@ namespace Projet_Victor_c_
 
             _ds.Save();
             RefreshLists();
+        }
+        
+        // Save button handler: persist current data to disk
+        private void BtnSave_Click(object? sender, EventArgs e)
+        {
+            try
+            {
+                _ds.Save();
+                MessageBox.Show(this, "Data saved.", "Saved", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, "Error saving data: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }
