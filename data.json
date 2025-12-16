@@ -1,0 +1,14 @@
+{
+  "Hosts": [
+    {
+      "Id": "9c6aee50-b848-45cb-9617-fe089bb8c94e",
+      "HostName": "asd",
+      "OS": 0,
+      "Description": "",
+      "Tags": [],
+      "InterfaceIds": []
+    }
+  ],
+  "Interfaces": [],
+  "Rules": []
+}

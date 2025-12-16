@@ -1,5 +1,3 @@
-
-
 namespace Projet_Victor_c_
 {
    
@@ -14,6 +12,7 @@ namespace Projet_Victor_c_
         private Button btnAddRule;
         private Button btnSave;
         private Button btnDeleteHost;
+        private Button btnDeleteIf;
         private Button btnDeleteRule;
 
         public MainForm()
@@ -31,15 +30,17 @@ namespace Projet_Victor_c_
             btnAddRule = new Button { Location = new Point(224, 380), Size = new Size(110, 27), Text = "Add Rule" };
             btnSave = new Button { Location = new Point(596, 380), Size = new Size(90, 27), Text = "Save" };
             btnDeleteHost = new Button { Location = new Point(340, 380), Size = new Size(120, 27), Text = "Delete Host" };
+            btnDeleteIf = new Button { Location = new Point(460, 380), Size = new Size(120, 27), Text = "Delete IntR" };
             btnDeleteRule = new Button { Location = new Point(736, 380), Size = new Size(120, 27), Text = "Delete Rule" };
 
-            Controls.AddRange(new Control[] { listBoxHosts, listBoxIf, listBoxRules, btnAddHost, btnAddIf, btnAddRule, btnSave, btnDeleteHost, btnDeleteRule });
+            Controls.AddRange(new Control[] { listBoxHosts, listBoxIf, listBoxRules, btnAddHost, btnAddIf, btnAddRule, btnSave, btnDeleteHost, btnDeleteIf, btnDeleteRule });
 
             btnAddHost.Click += BtnAddHost_Click;
             btnAddIf.Click += BtnAddIf_Click;
             btnAddRule.Click += BtnAddRule_Click;
             btnSave.Click += BtnSave_Click;
             btnDeleteHost.Click += BtnDeleteHost_Click;
+            btnDeleteIf.Click += BtnDeleteIf_Click;
             btnDeleteRule.Click += BtnDeleteRule_Click;
 
             listBoxHosts.DoubleClick += ListBoxHosts_DoubleClick;
@@ -286,6 +287,41 @@ namespace Projet_Victor_c_
         {
             _ds.Save();
             MessageBox.Show("Saved");
+        }
+
+        private void BtnDeleteIf_Click(object? sender, EventArgs e)
+        {
+            if (listBoxIf.SelectedIndex < 0)
+            {
+                MessageBox.Show(this, "Select an interface to delete.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            var idx = listBoxIf.SelectedIndex;
+            if (idx >= _ds.Interfaces.Count) return;
+            var ni = _ds.Interfaces[idx];
+
+            var host = _ds.Hosts.FirstOrDefault(h => h.Id == ni.HostId);
+
+            string msg = "Delete interface '" + ni.Identifier + "'?";
+            if (host != null) msg += "\nHost: " + host.HostName;
+            if (ni.RuleIds != null && ni.RuleIds.Any())
+            {
+                msg += "\nThis interface is referenced by the following rules:\n" + string.Join("\n", ni.RuleIds.Select(rid => {
+                    var r = _ds.Rules.FirstOrDefault(x => x.Id == rid);
+                    return r != null ? r.Identifier : rid;
+                }));
+            }
+
+            var dr = MessageBox.Show(this, msg, "Confirm delete", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+            if (dr != DialogResult.OK) return;
+
+            // remove the interface and cleanup host references
+            _ds.Interfaces.Remove(ni);
+            if (host != null) host.InterfaceIds.RemoveAll(id => id == ni.Id);
+
+            _ds.Save();
+            RefreshLists();
         }
     }
 }

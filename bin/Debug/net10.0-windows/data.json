@@ -1,20 +1,5 @@
 {
   "Hosts": [],
   "Interfaces": [],
-  "Rules": [
-    {
-      "Id": "24b8b715-a974-4109-940d-a3e85ce0f619",
-      "Identifier": "12344",
-      "Description": "",
-      "Action": 1,
-      "Program": "",
-      "PortType": 0,
-      "LocalPorts": "",
-      "RemotePorts": "",
-      "LocalAddress": "",
-      "RemoteAddress": "",
-      "Tag": "",
-      "Enabled": true
-    }
-  ]
+  "Rules": []
 }
